@@ -1,0 +1,8 @@
+{
+  "projects": {
+    "default": "locoshed-bhusawal-9c5ce",
+    "prod": "bhusawal-locoshed"
+  },
+  "targets": {},
+  "etags": {}
+}

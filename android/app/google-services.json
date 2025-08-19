@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "445616630533",
+    "project_id": "locoshed-bhusawal-9c5ce",
+    "storage_bucket": "locoshed-bhusawal-9c5ce.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:445616630533:android:94356b380558ec3e2a256c",
+        "android_client_info": {
+          "package_name": "com.example.loco_info"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDEFBpozJGQMkYO5-GhrJc1NdIUvRuoCKM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

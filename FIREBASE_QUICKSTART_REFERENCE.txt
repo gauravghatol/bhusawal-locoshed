@@ -1,0 +1,108 @@
+Firebase Auth & Firestore Quickstart Reference
+==============================================
+
+This is a general-purpose guide for setting up Firebase Authentication (anonymous) and Firestore database in any Flutter project in under 5 minutes.
+
+1. Add dependencies to your pubspec.yaml:
+   dependencies:
+     firebase_core: ^latest
+     firebase_auth: ^latest
+     cloud_firestore: ^latest
+
+2. Initialize Firebase in your main.dart:
+   import 'package:firebase_core/firebase_core.dart';
+   void main() async {
+     WidgetsFlutterBinding.ensureInitialized();
+     await Firebase.initializeApp();
+     runApp(MyApp());
+   }
+
+3. Use this service pattern in your project:
+
+// firebase_quickstart_service.dart
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
+class FirebaseQuickstartService {
+  static final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  static final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  static Future<User?> signInAnonymously() async {
+    final result = await _auth.signInAnonymously();
+    return result.user;
+  }
+
+  static bool get isAuthenticated => _auth.currentUser != null;
+  static User? get currentUser => _auth.currentUser;
+
+  static Stream<List<Map<String, dynamic>>> collectionStream(String collectionPath) {
+    return _firestore.collection(collectionPath).snapshots().map((snapshot) =>
+      snapshot.docs.map((doc) => {'id': doc.id, ...doc.data()}).toList()
+    );
+  }
+
+  static Future<Map<String, dynamic>?> getDocument(String collectionPath, String docId) async {
+    final doc = await _firestore.collection(collectionPath).doc(docId).get();
+    return doc.exists ? doc.data() : null;
+  }
+
+  static Future<void> setDocument(String collectionPath, String docId, Map<String, dynamic> data) async {
+    await _firestore.collection(collectionPath).doc(docId).set(data, SetOptions(merge: true));
+  }
+
+  static Future<void> deleteDocument(String collectionPath, String docId) async {
+    await _firestore.collection(collectionPath).doc(docId).delete();
+  }
+
+  static Future<void> batchSetDocuments(String collectionPath, Map<String, Map<String, dynamic>> updates) async {
+    final batch = _firestore.batch();
+    updates.forEach((docId, data) {
+      final docRef = _firestore.collection(collectionPath).doc(docId);
+      batch.set(docRef, data, SetOptions(merge: true));
+    });
+    await batch.commit();
+  }
+
+  static Future<void> signOut() async {
+    await _auth.signOut();
+  }
+}
+
+4. Usage Examples:
+------------------
+// Initialize Firebase in main.dart (see step 2)
+
+// Sign in anonymously
+await FirebaseQuickstartService.signInAnonymously();
+
+// Listen to a collection
+FirebaseQuickstartService.collectionStream('my_collection').listen((docs) {
+  print(docs); // List<Map<String, dynamic>>
+});
+
+// Get a document
+final doc = await FirebaseQuickstartService.getDocument('my_collection', 'docId');
+
+// Set/update a document
+await FirebaseQuickstartService.setDocument('my_collection', 'docId', {'field': 'value'});
+
+// Batch update
+await FirebaseQuickstartService.batchSetDocuments('my_collection', {
+  'doc1': {'field': 'value1'},
+  'doc2': {'field': 'value2'},
+});
+
+// Delete a document
+await FirebaseQuickstartService.deleteDocument('my_collection', 'docId');
+
+// Sign out
+await FirebaseQuickstartService.signOut();
+
+5. Notes:
+---------
+- This pattern works for any Flutter project.
+- You can copy the service class and usage examples directly.
+- For advanced use (auth state changes, custom claims, etc.), extend the service as needed.
+- Always initialize Firebase before calling any service methods.
+
+Keep this file as a quick reference for any new project setup!
